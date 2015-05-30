@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from app import db
+from app import db, bcrypt
 
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(64), index=True, unique=True)
+    pw_hash = db.Column(db.String(128))
     email = db.Column(db.String(128), index=True, unique=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
 
@@ -24,6 +25,12 @@ class User(db.Model):
             return unicode(self.id)		# python 2
         except NameError:
             return str(self.id)			# python 3
+
+    def check_password(hashed_password, password):
+        return bcrypt.check_password_hash(hashed_password, password)
+
+    def make_a_hash(password):
+        return bcrypt.generate_password_hash(password)
 
     def __repr__(self):
         return '<User {0}>'.format(self.nickname)

@@ -3,3 +3,4 @@
 *.pyc
 *.db
 migrations/
+tmp/
