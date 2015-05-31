@@ -26,11 +26,11 @@ class User(db.Model):
         except NameError:
             return str(self.id)			# python 3
 
-    def check_password(hashed_password, password):
-        return bcrypt.check_password_hash(hashed_password, password)
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.pw_hash, password)
 
-    def make_a_hash(password):
-        return bcrypt.generate_password_hash(password)
+    def make_a_hash(self, password):
+        self.pw_hash = bcrypt.generate_password_hash(password)
 
     def __repr__(self):
         return '<User {0}>'.format(self.nickname)
