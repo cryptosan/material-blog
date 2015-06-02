@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from flask.ext.wtf import Form
 from wtforms import PasswordField, StringField, SubmitField, BooleanField, \
-    ValidationError
+    TextAreaField, ValidationError
 from wtforms.validators import Email, DataRequired, Length, EqualTo, \
     Required, Regexp
 from .models import User
@@ -47,3 +47,8 @@ class RegisterForm(Form):
     def validate_nickname(self, field):
         if User.query.filter_by(nickname=field.data).first():
             raise ValidationError('Nickname already registered.')
+
+
+class EditForm(Form):
+    nickname = StringField('nickname', validators=[DataRequired()])
+    about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
