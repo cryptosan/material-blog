@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from app import app, db, lm
 from .models import User
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, EditForm
 from flask import render_template, redirect, flash, redirect, session, \
     url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, \
@@ -84,11 +84,34 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user is None:
             flash('Invalid login. Please try again.')
-            redirect(url_for('login'))
+            return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
     return render_template('login.html',
                            title='Sign in',
                            form=form)
+
+
+@app.route('/edit', methods=['GET', 'POST'])
+@login_required
+def edit():
+    form = EditForm()
+    if form.validate_on_submit():
+        # Check nickname duplication what a user wants.
+        if form.nickname.data != g.user.nickname:
+            if form.valid_nickname(form.nickname) is not None:
+                flash('The nickname is already used!')
+                return redirect(url_for('edit'))
+
+        g.user.nickname = form.nickname.data
+        g.user.about_me = form.about_me.data
+        db.session.add(g.user)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('edit'))
+    else:
+        form.nickname.data = g.user.nickname
+        form.about_me.data = g.user.about_me
+    return render_template('edit.html', form=form)
 
 
 @app.route('/logout')
@@ -107,15 +130,30 @@ def register():
 
     form = RegisterForm()
     if form.validate_on_submit():
-        # Duplication check for email, and nickname
-        form.validate_email(form.email)
-        form.validate_nickname(form.nickname)
+        if form.valid_email(form.email) is not None:
+            flash('The email is already used!')
+            return redirect(url_for('register'))
+        if form.valid_nickname(form.nickname) is not None:
+            flash('The nickname is already used!')
+            return redirect(url_for('register'))
 
         user = User(email=form.email.data, nickname=form.nickname.data)
         user.make_a_hash(form.password.data)
         db.session.add(user)
         db.session.commit()
-        redirect(url_for('login'))
+        flash('You are registered!')
+        return redirect(url_for('login'))
     return render_template('register.html',
                            title='Sign up',
                            form=form)
+
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
