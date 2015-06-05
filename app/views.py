@@ -86,6 +86,7 @@ def login():
             flash('Invalid login. Please try again.')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
+        return redirect(url_for('index'))
     return render_template('login.html',
                            title='Sign in',
                            form=form)
@@ -94,13 +95,13 @@ def login():
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
-    form = EditForm()
+    form = EditForm(g.user.nickname)
     if form.validate_on_submit():
         # Check nickname duplication what a user wants.
-        if form.nickname.data != g.user.nickname:
-            if form.valid_nickname(form.nickname) is not None:
-                flash('The nickname is already used!')
-                return redirect(url_for('edit'))
+        # if form.nickname.data != g.user.nickname:
+        #     if form.valid_nickname(form.nickname) is not None:
+        #         flash('The nickname is already used!')
+        #         return redirect(url_for('edit'))
 
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data
@@ -112,6 +113,25 @@ def edit():
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
     return render_template('edit.html', form=form)
+
+
+@app.route('/follow/<nickname>')
+def follow(nickname):
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('User {0} not found.'.format(nickname))
+        return redirect(url_for('index'))
+    if user == g.user:
+        flash('You can\'t follow yourself!')
+        return redirect(url_for('user', nickname=nickname))
+    u = g.user.follow(user)
+    if u is None:
+        flash('You are already following {0}'.format(nickname))
+        return redirect(url_for('user', nickname=nickname))
+    db.session.add(u)
+    db.session.commit()
+    flash('You are now following {0}!'.format(nickname))
+    return redirect(url_for('user', nickname=nickname))
 
 
 @app.route('/logout')
@@ -130,12 +150,12 @@ def register():
 
     form = RegisterForm()
     if form.validate_on_submit():
-        if form.valid_email(form.email) is not None:
-            flash('The email is already used!')
-            return redirect(url_for('register'))
-        if form.valid_nickname(form.nickname) is not None:
-            flash('The nickname is already used!')
-            return redirect(url_for('register'))
+        # if form.valid_email(form.email) is not None:
+        #     flash('The email is already used!')
+        #     return redirect(url_for('register'))
+        # if form.valid_nickname(form.nickname) is not None:
+        #     flash('The nickname is already used!')
+        #     return redirect(url_for('register'))
 
         user = User(email=form.email.data, nickname=form.nickname.data)
         user.make_a_hash(form.password.data)
