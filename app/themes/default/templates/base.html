@@ -1,0 +1,33 @@
+<html>
+<head>
+	{% if title %}
+	<title>{{ title }} - Material Blog</title>
+	{% else %}
+	<title>Welcome to Material Blog</title>
+	{% endif %}
+</head>
+<body>
+	<div>
+		Material Blog: <a href="{{ url_for('index') }}">Home</a> 
+		{% if g.user.is_authenticated() %}
+		| <a href="{{ url_for('user', nickname=g.user.nickname) }}">Profile</a>
+		| <a href="{{ url_for('logout') }}">Sign out</a>
+		{% else %}
+			{% if g.register_form %}
+			| <a href="{{ url_for('register') }}">Sign up</a>
+			{% endif %}
+		{% endif %}
+	</div>
+	<hr>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul>
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+	{% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>Sign in</h1>
+	<form action="" method="post">
+		<!-- The form.hidden_tag() template argument will get replaced with
+		a hidden field that implements the CSRF prevention that we enabled in
+		the configuration. -->
+		{{ form.hidden_tag() }}
+		<table>
+			<tr>
+				<td>{{ form.email.label }} : </td>
+				<td>
+					{{ form.email | safe }}
+					{% for error in form.errors.email %}
+					<br><span style="color: red;">{{ error }}</span>
+					{% endfor %}
+				</td>
+			</tr>
+			<tr>
+				<td>{{ form.password.label }} : </td>
+				<td>{{ form.password }}
+					{% for error in form.errors.password %}
+					<br><span style="color: red;">{{ error }}</span>
+					{% endfor %}
+				</td>
+			</tr>
+		</table>
+		<p>{{ form.remember_me }} Remember Me</p>
+		<p>{{ form.submit }}</p>
+	</form>
+{% endblock %}
