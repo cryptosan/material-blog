@@ -7,13 +7,20 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
+# Setting funcs.
+REGISTER_ENABLED = True
+POST_PER_PAGE = 3
 WTF_CSRF_ENABLED = True
 SECRET_KEY = 'youdontknowthis$'
 
-OPENID_PROVIDERS = [
-    {'name': 'Google', 'url': 'https://googleapis.com/auth/userinfo.email'},
-    {'name': 'Yahoo', 'url': 'https://me.yahoo.com'},
-    {'name': 'AOL', 'url': 'http://openid.aol.com/<username>'},
-    {'name': 'Flickr', 'url': 'http://www.flickr.com/<username>'},
-    {'name': 'MyOpenID', 'url': 'https://www.myopenid.com'}
-]
+# Theme list.
+THEME_LIST = {
+    'Default': 'default'
+}
+
+# Setting for using theme.
+USE_THEME = 'Default'
+
+# Setting paths of static, and templates folder
+STATIC_PATH = os.path.join('themes', THEME_LIST[USE_THEME], 'static')
+TEMPLATES_PATH = os.path.join('themes', THEME_LIST[USE_THEME], 'templates')
