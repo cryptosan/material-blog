@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from app import app, db, lm
-from .models import User
-from .forms import LoginForm, RegisterForm, EditForm
+from app import app, db, lm, signup
+from config import POST_PER_PAGE
+from .models import User, Post
+from .forms import LoginForm, RegisterForm, EditForm, PostForm
 from flask import render_template, redirect, flash, redirect, session, \
     url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, \
     login_required
+from flask.ext.register import register_required
 from datetime import datetime
 
 
@@ -24,6 +26,7 @@ def before_request():
     current_user global is set by Flask-Login, so to set the g object that
     the object can share on app life cycle.
     """
+    g.register_form = signup.is_enabled()
     g.user = current_user
     if g.user.is_authenticated():
         g.user.last_seen = datetime.utcnow()
@@ -31,42 +34,38 @@ def before_request():
         db.session.commit()
 
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
+@app.route('/index/<int:page>', methods=['GET', 'POST'])
 @login_required
-def index():
+def index(page=1):
     """View index page, when a user is logged in."""
-    user = g.user
-    # Fake datas for unittest.
-    posts = [
-        {
-            'author': {'nickname': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'nickname': 'Cryptos'},
-            'body': 'The weather is so hot now!!'
-        }
-    ]
-
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body=form.post.data,
+                    timestamp=datetime.utcnow(),
+                    author=g.user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post is now live!')
+        return redirect(url_for('index'))
+    posts = g.user.followed_posts().paginate(page, POST_PER_PAGE, False)
     return render_template('index.html',
                            title='Home',
-                           user=user,
+                           form=form,
                            posts=posts)
 
 
 @app.route('/user/<nickname>')
+@app.route('/user/<nickname>/<int:page>')
 @login_required
-def user(nickname):
+def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
         flash('User {0} not found.'.format(nickname))
         return redirect(url_for('index'))
-    # Some datas for unittest
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'}
-    ]
+    posts = user.posts.order_by(Post.timestamp.desc()). \
+        paginate(page, POST_PER_PAGE, False)
     return render_template('user.html',
                            user=user,
                            posts=posts)
@@ -97,11 +96,6 @@ def login():
 def edit():
     form = EditForm(g.user.nickname)
     if form.validate_on_submit():
-        # Check nickname duplication what a user wants.
-        # if form.nickname.data != g.user.nickname:
-        #     if form.valid_nickname(form.nickname) is not None:
-        #         flash('The nickname is already used!')
-        #         return redirect(url_for('edit'))
 
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data
@@ -163,6 +157,7 @@ def logout():
 
 
 @app.route('/register', methods=['GET', 'POST'])
+@register_required
 def register():
     """Sign a user up."""
     # When a user is already logged in, return to index page.
@@ -171,12 +166,6 @@ def register():
 
     form = RegisterForm()
     if form.validate_on_submit():
-        # if form.valid_email(form.email) is not None:
-        #     flash('The email is already used!')
-        #     return redirect(url_for('register'))
-        # if form.valid_nickname(form.nickname) is not None:
-        #     flash('The nickname is already used!')
-        #     return redirect(url_for('register'))
 
         user = User(email=form.email.data, nickname=form.nickname.data)
         user.make_a_hash(form.password.data)
