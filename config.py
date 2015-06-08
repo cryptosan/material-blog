@@ -4,11 +4,10 @@ from __future__ import unicode_literals
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
-SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
+SQLALCHEMY_DATABASE_URI = "postgresql://cryptos:cryptos@localhost/testdb"
 
 # Setting funcs.
-REGISTER_ENABLED = False
+REGISTER_ENABLED = True
 POST_PER_PAGE = 3
 WTF_CSRF_ENABLED = True
 SECRET_KEY = 'youdontknowthis$'
