@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from app import db, bcrypt
+from app import app, db, bcrypt
 from hashlib import md5
+
+# Doesn't work on Python 3.
+import flask.ext.whooshalchemy as whooshalchemy
 
 
 followers = db.Table(
@@ -79,6 +82,8 @@ class User(db.Model):
 
 
 class Post(db.Model):
+    __searchable__ = ['body']
+
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime)
@@ -86,3 +91,7 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {0}>'.format(self.body)
+
+
+# Run whooshalchemy.
+whooshalchemy.whoosh_index(app, Post)

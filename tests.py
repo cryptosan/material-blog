@@ -2,10 +2,12 @@
 from __future__ import unicode_literals
 
 import unittest
+import os
 from app import app, db
 from app.models import User
 from datetime import datetime, timedelta
 from app.models import User, Post
+from config import basedir
 
 
 class TestCase(unittest.TestCase):
@@ -15,6 +17,7 @@ class TestCase(unittest.TestCase):
         app.config['WTF_CSRF_ENABLED'] = False
         # unittest in memory
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        app.config['WHOOSH_BASE'] = os.path.join(basedir, 'test_search.db')
         self.app = app.test_client()
         db.create_all()
 
@@ -110,6 +113,27 @@ class TestCase(unittest.TestCase):
         assert f2 == [p3, p2]
         assert f3 == [p4, p3]
         assert f4 == [p4]
+
+    def test_full_text_search(self):
+        u = User.query.get(1)
+        p = Post(body='first post', timestamp=datetime.utcnow(),
+                 author=u)
+        db.session.add(p)
+        p = Post(body='second post', timestamp=datetime.utcnow(),
+                 author=u)
+        db.session.add(p)
+        p = Post(body='third post', timestamp=datetime.utcnow(),
+                 author=u)
+        db.session.add(p)
+        db.session.commit()
+        # Run tests.
+        datas = Post.query.whoosh_search('post').all()
+        assert len(datas) == 3
+        datas = Post.query.whoosh_search('second').all()
+        assert len(datas) == 1
+        datas = Post.query.whoosh_search('second OR third').all()
+        assert len(datas) == 2
+
 
 if __name__ == '__main__':
     unittest.main()

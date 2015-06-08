@@ -2,9 +2,9 @@
 from __future__ import unicode_literals
 
 from app import app, db, lm, signup
-from config import POST_PER_PAGE
+from config import POST_PER_PAGE, MAX_SEARCH_RESULTS
 from .models import User, Post
-from .forms import LoginForm, RegisterForm, EditForm, PostForm
+from .forms import LoginForm, RegisterForm, EditForm, PostForm, SearchForm
 from flask import render_template, redirect, flash, redirect, session, \
     url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, \
@@ -32,6 +32,7 @@ def before_request():
         g.user.last_seen = datetime.utcnow()
         db.session.add(g.user)
         db.session.commit()
+        g.search_form = SearchForm()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -71,26 +72,6 @@ def user(nickname, page=1):
                            posts=posts)
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    """Log a user in."""
-    # When a user is already logged in, return to index page.
-    if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('index'))
-
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user is None:
-            flash('Invalid login. Please try again.')
-            return redirect(url_for('login'))
-        login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('index'))
-    return render_template('login.html',
-                           title='Sign in',
-                           form=form)
-
-
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
@@ -107,6 +88,23 @@ def edit():
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
     return render_template('edit.html', form=form)
+
+
+@app.route('/search', methods=['POST'])
+@login_required
+def search():
+    if not g.search_form.validate_on_submit():
+        return redirect(url_for('index'))
+    return redirect(url_for('search_results', query=g.search_form.search.data))
+
+
+@app.route('/search_results/<query>')
+@login_required
+def search_results(query):
+    results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
+    return render_template('search_results.html',
+                           query=query,
+                           results=results)
 
 
 @app.route('/follow/<nickname>')
@@ -147,6 +145,26 @@ def unfollow(nickname):
     db.session.commit()
     flash('You don\'t follow {0} anymore'.format(nickname))
     return redirect(url_for('user', nickname=nickname))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Log a user in."""
+    # When a user is already logged in, return to index page.
+    if g.user is not None and g.user.is_authenticated():
+        return redirect(url_for('index'))
+
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None:
+            flash('Invalid login. Please try again.')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
+        return redirect(url_for('index'))
+    return render_template('login.html',
+                           title='Sign in',
+                           form=form)
 
 
 @app.route('/logout')
