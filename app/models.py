@@ -10,19 +10,22 @@ import flask.ext.whooshalchemy as whooshalchemy
 
 followers = db.Table(
     'followers',
-    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
+    db.Column('follower_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('users.id'))
 )
 
 
 class User(db.Model):
+    __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(64), index=True, unique=True)
-    pw_hash = db.Column(db.String(128))
-    email = db.Column(db.String(128), index=True, unique=True)
+    pw_hash = db.Column(db.String(128), nullable=False)
+    email = db.Column(db.String(128), index=True, unique=True, nullable=False)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime)
+    user_active = db.Column(db.Boolean, default=True, nullable=True)
     followed = db.relationship(
         'User',
         secondary=followers,
@@ -36,7 +39,7 @@ class User(db.Model):
         return True
 
     def is_active(self):
-        return True
+        return self.user_active
 
     def is_anonymous(self):
         return False
@@ -82,12 +85,13 @@ class User(db.Model):
 
 
 class Post(db.Model):
+    __tablename__ = 'posts'
     __searchable__ = ['body']
 
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __repr__(self):
         return '<Post {0}>'.format(self.body)
