@@ -35,12 +35,19 @@ def before_request():
         g.search_form = SearchForm()
 
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
-@app.route('/index/<int:page>', methods=['GET', 'POST'])
+@app.route('/')
+@app.route('/index')
+def index():
+    """View index page"""
+    return render_template('index.html',
+                           title='Home')
+
+
+@app.route('/timeline', methods=['GET', 'POST'])
+@app.route('/timeline/<int:page>', methods=['GET', 'POST'])
 @login_required
-def index(page=1):
-    """View index page, when a user is logged in."""
+def timeline(page=1):
+    """View timeline page"""
     form = PostForm()
     if form.validate_on_submit():
         post = Post(body=form.post.data,
@@ -49,10 +56,10 @@ def index(page=1):
         db.session.add(post)
         db.session.commit()
         flash('Your post is now live!')
-        return redirect(url_for('index'))
+        return redirect(url_for('timeline'))
     posts = g.user.followed_posts().paginate(page, POST_PER_PAGE, False)
-    return render_template('index.html',
-                           title='Home',
+    return render_template('timeline.html',
+                           title='Timeline',
                            form=form,
                            posts=posts)
 
@@ -68,6 +75,7 @@ def user(nickname, page=1):
     posts = user.posts.order_by(Post.timestamp.desc()). \
         paginate(page, POST_PER_PAGE, False)
     return render_template('user.html',
+                           title='Profile',
                            user=user,
                            posts=posts)
 
@@ -86,7 +94,7 @@ def edit():
     else:
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
-    return render_template('edit.html', form=form)
+    return render_template('edit.html', title='Edit', form=form)
 
 
 @app.route('/delete/<int:post_id>')
@@ -196,10 +204,8 @@ def register():
     # When a user is already logged in, return to index page.
     if g.user is not None and g.user.is_authenticated():
         return redirect(url_for('index'))
-
     form = RegisterForm()
     if form.validate_on_submit():
-
         user = User(email=form.email.data, nickname=form.nickname.data)
         user.make_a_hash(form.password.data)
         db.session.add(user)
