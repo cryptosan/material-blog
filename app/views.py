@@ -77,7 +77,6 @@ def user(nickname, page=1):
 def edit():
     form = EditForm(g.user.nickname)
     if form.validate_on_submit():
-
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data
         db.session.add(g.user)
@@ -88,6 +87,22 @@ def edit():
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
     return render_template('edit.html', form=form)
+
+
+@app.route('/delete/<int:post_id>')
+@login_required
+def delete(post_id):
+    post = Post.query.filter_by(id=post_id).first()
+    if post is None:
+        flash('Post not found!')
+        return redirect(url_for('user', nickname=g.user.nickname))
+    if g.user.id is not post.user_id:
+        flash('You\'re not a owner.!')
+        return redirect(url_for('user', nickname=g.user.nickname))
+    db.session.delete(post)
+    db.session.commit()
+    flash('The post has just deleted!')
+    return redirect(url_for('user', nickname=g.user.nickname))
 
 
 @app.route('/search', methods=['POST'])
