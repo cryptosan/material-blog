@@ -45,11 +45,11 @@ class RegisterForm(Form):
         ),
         Length(min=4, max=12)
     ])
-    password = PasswordField('New Password', [
+    password = PasswordField('Password', [
         DataRequired(),
         EqualTo('confirm', message='Password must match')
     ])
-    confirm = PasswordField('Repeat Password')
+    confirm = PasswordField('Confirm')
     submit = SubmitField('Register')
 
     def validate(self):
