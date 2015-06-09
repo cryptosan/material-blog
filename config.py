@@ -8,7 +8,7 @@ SQLALCHEMY_DATABASE_URI = "postgresql://cryptos:cryptos@localhost/testdb"
 
 # Setting funcs.
 REGISTER_ENABLED = True
-POST_PER_PAGE = 3
+POST_PER_PAGE = 5
 WTF_CSRF_ENABLED = True
 SECRET_KEY = 'youdontknowthis$'
 # Full text search engine path.
