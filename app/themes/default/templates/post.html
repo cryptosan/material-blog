@@ -1,6 +1,21 @@
-<table>
+<!-- <table>
 	<tr valign="top">
 		<td><img src="{{ post.author.avatar(50) }}"></td>
-		<td><i>{{ post.author.nickname }} says:</i><br>{{ post.body }}</td>
+		<td>
+            <i>{{ post.author.nickname }} says:</i><br>{{ post.body }}<br>
+            {% if post.user_id == g.user.id %}
+            <a href="{{ url_for('delete', post_id=post.id) }}">Delete</a>
+            {% endif %}
+        </td>
 	</tr>
-</table>
+</table> -->
+
+
+<tr>
+    <td><img src="{{ post.author.avatar(30) }}"></td>
+    <td>{{ post.body }}</td>
+    <td>{{ post.author.nickname }}</td>
+    {% if post.user_id == g.user.id %}
+    <td><a href="{{ url_for('delete', post_id=post.id) }}">delete</a></td>
+    {% endif %}
+</tr>

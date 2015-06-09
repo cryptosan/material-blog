@@ -1,42 +1,81 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<h1>Sign up</h1>
-	<form action="" method="post">
-		{{ form.hidden_tag() }}
-		<table>
-			<tr>
-				<td>{{ form.email.label }}: </td>
-				<td>
-					{{ form.email | safe }}
-					{% for error in form.errors.email %}
-					<br><span style="color: red;">{{ error }}</span>
-					{% endfor %}
-				</td>
-			</tr>
-			<tr>
-				<td>{{ form.nickname.label }}: </td>
-				<td>
-					{{ form.nickname | safe }}
-					{% for error in form.errors.nickname %}
-					<br><span style="color: red;">{{ error }}</span>
-					{% endfor %}
-				</td>
-			</tr>
-			<tr>
-				<td>{{ form.password.label }}: </td>
-				<td>{{ form.password }}</td>
-			</tr>
-			<tr>
-				<td>{{ form.confirm.label }}: </td>
-				<td>
-					{{ form.confirm }}
-					{% for error in form.errors.password %}
-					<br><span style="color: red;">{{ error }}</span>
-					{% endfor %}
-				</td>
-			</tr>
-		</table>
-		<p>{{ form.submit }}</p>
-	</form>
+	<div class="container custom_width">
+		<div class="panel panel-default">
+			<div class="panel-heading">Sign Up</div>
+			<div class="panel-body">
+				<form action="" method="post" class="form-horizontal">
+					{{ form.hidden_tag() }}
+					<fieldset>
+						<div class="form-group">
+							{{ form.email.label(class="col-lg-2 control-label") }}
+							<div class="col-lg-10">
+								{{ form.email(class="form-control", placeholder="Email", type="text") | safe }}
+							</div>
+						</div>
+						<div class="form-group">
+							{{ form.nickname.label(class="col-lg-2 control-label") }}
+							<div class="col-lg-10">
+								{{ form.nickname(class="form-control", placeholder="Nickname", type="text") | safe }}
+							</div>
+						</div>
+						<div class="form-group">
+							{{ form.password.label(class="col-lg-2 control-label") }}
+							<div class="col-lg-10">
+								{{ form.password(class="form-control", placeholder="Password") }}
+							</div>
+						</div>
+						<div class="form-group">
+							{{ form.confirm.label(class="col-lg-2 control-label") }}
+							<div class="col-lg-10">
+								{{ form.confirm(class="form-control", placeholder="Repeat password") }}
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-lg-10 col-lg-offset-2">
+								<button type="reset" class="btn btn-default">Cancel</button>&nbsp;&nbsp;
+								{{ form.submit(class="btn btn-primary") }}
+							</div>
+						</div>
+					</fieldset>
+				</form>
+				<!-- <table>
+						<tr>
+							<td>{{ form.email.label }}: </td>
+							<td>
+								{{ form.email | safe }}
+								{% for error in form.errors.email %}
+								<br><span style="color: red;">{{ error }}</span>
+								{% endfor %}
+							</td>
+						</tr>
+						<tr>
+							<td>{{ form.nickname.label }}: </td>
+							<td>
+								{{ form.nickname | safe }}
+								{% for error in form.errors.nickname %}
+								<br><span style="color: red;">{{ error }}</span>
+								{% endfor %}
+							</td>
+						</tr>
+						<tr>
+							<td>{{ form.password.label }}: </td>
+							<td>{{ form.password }}</td>
+						</tr>
+						<tr>
+							<td>{{ form.confirm.label }}: </td>
+							<td>
+								{{ form.confirm }}
+								{% for error in form.errors.password %}
+								<br><span style="color: red;">{{ error }}</span>
+								{% endfor %}
+							</td>
+						</tr>
+					</table>
+					<p>{{ form.submit }}</p> -->
+			</div>
+		</div>
+	</div>
 {% endblock %}
+

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container custom_width">
+    {% include 'message/success.html' %}
+    <form action="" method="post" name="post">
+        {{ form.hidden_tag() }}
+        <table>
+            <tr>
+                <td>Say: </td>
+                <td>{{ form.post(size=30, maxlength=140) }}</td>
+                <td>
+                    {% for error in form.post.errors %}
+                    <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Post!"></td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+
+    {% for post in posts.items %}
+       {% include 'post.html' %}
+    {% endfor %}
+    {% if posts.has_prev %}<a href="{{ url_for('tiemline', page=posts.prev_num) }}">&lt;&lt; Newer posts</a>
+    {% else %}&lt;&lt; Newer posts{% endif %} |
+    {% if posts.has_next %}<a href="{{ url_for('tiemline', page=posts.next_num) }}">Older posts &gt;&gt;</a>
+    {% else %}Older posts &gt;&gt;{% endif %}
+</div>
+{% endblock %}
