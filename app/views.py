@@ -145,9 +145,9 @@ def search():
 @app.route('/search_results/<query>')
 @login_required
 def search_results(query):
-    results = Post.query.whoosh_search(Post.body.contains(query),
-                                       MAX_SEARCH_RESULTS).all()
-    # results = Post.query.filter(Post.body.contains(query)).all()
+    # results = Post.query.whoosh_search(Post.body.contains(query),
+    #                                    MAX_SEARCH_RESULTS).all()
+    results = Post.query.filter(Post.body.contains(query)).all()
     return render_template('search_results.html',
                            query=query,
                            results=results)
@@ -199,7 +199,6 @@ def login():
     # When a user is already logged in, return to index page.
     if g.user is not None and g.user.is_authenticated():
         return redirect(url_for('index'))
-
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
