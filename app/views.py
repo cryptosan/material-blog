@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 from app import app, db, lm, signup
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS
 from .models import User, Post
-from .forms import LoginForm, RegisterForm, EditForm, PostForm, SearchForm
+from .forms import LoginForm, RegisterForm, EditForm, PostForm, SearchForm, \
+    EditPostForm
 from flask import render_template, redirect, flash, redirect, session, \
     url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, \
@@ -39,8 +40,16 @@ def before_request():
 @app.route('/index')
 def index():
     """View index page"""
+    config = {
+        'jumbotron': {
+            'header': 'Material Blog',
+            'desc': 'This is a simple material blog for portfolio.',
+            'link': '#'
+        }
+    }
     return render_template('index.html',
-                           title='Home')
+                           title='Home',
+                           conf=config)
 
 
 @app.route('/timeline', methods=['GET', 'POST'])
@@ -64,25 +73,35 @@ def timeline(page=1):
                            posts=posts)
 
 
-@app.route('/user/<nickname>')
-@app.route('/user/<nickname>/<int:page>')
+@app.route('/user/<nickname>', methods=['GET', 'POST'])
+@app.route('/user/<nickname>/<int:page>', methods=['GET', 'POST'])
 @login_required
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
         flash('User {0} not found.'.format(nickname))
         return redirect(url_for('index'))
+    editpost = EditPostForm()
+    if editpost.validate_on_submit():
+        post = user.posts.filter_by(id=editpost.post_id.data).first()
+        post.body = editpost.post.data
+        db.session.add(post)
+        db.session.commit()
+        flash('The post was edited!')
+        return redirect(url_for('user', nickname=g.user.nickname))
     posts = user.posts.order_by(Post.timestamp.desc()). \
         paginate(page, POST_PER_PAGE, False)
     return render_template('user.html',
                            title='Profile',
                            user=user,
-                           posts=posts)
+                           posts=posts,
+                           editpostform=editpost)
 
 
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
+    """Edit a user profile that be requested."""
     form = EditForm(g.user.nickname)
     if form.validate_on_submit():
         g.user.nickname = form.nickname.data
@@ -103,10 +122,12 @@ def delete(post_id):
     post = Post.query.filter_by(id=post_id).first()
     if post is None:
         flash('Post not found!')
-        return redirect(url_for('user', nickname=g.user.nickname))
+        return redirect(url_for('timeline', nickname=g.user.nickname,
+                                alert='danger'))
     if g.user.id is not post.user_id:
         flash('You\'re not a owner.!')
-        return redirect(url_for('user', nickname=g.user.nickname))
+        return redirect(url_for('timeline', nickname=g.user.nickname,
+                                alert='danger'))
     db.session.delete(post)
     db.session.commit()
     flash('The post has just deleted!')
@@ -124,7 +145,9 @@ def search():
 @app.route('/search_results/<query>')
 @login_required
 def search_results(query):
-    results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
+    results = Post.query.whoosh_search(Post.body.contains(query),
+                                       MAX_SEARCH_RESULTS).all()
+    # results = Post.query.filter(Post.body.contains(query)).all()
     return render_template('search_results.html',
                            query=query,
                            results=results)
@@ -184,7 +207,7 @@ def login():
             flash('Invalid login. Please try again.')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('index'))
+        return redirect(url_for('timeline'))
     return render_template('login.html',
                            title='Sign in',
                            form=form)
@@ -219,10 +242,10 @@ def register():
 
 @app.errorhandler(404)
 def not_found_error(error):
-    return render_template('404.html'), 404
+    return render_template('404.html', title='404'), 404
 
 
 @app.errorhandler(500)
 def internal_error(error):
     db.session.rollback()
-    return render_template('500.html'), 500
+    return render_template('500.html', title='500'), 500
