@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from flask.ext.wtf import Form
 from wtforms import PasswordField, StringField, SubmitField, BooleanField, \
-    TextAreaField
+    TextAreaField, IntegerField
 from wtforms.validators import Email, DataRequired, Length, EqualTo, \
     Regexp
 from .models import User
@@ -94,6 +94,13 @@ class EditForm(Form):
                 'This nickname is already in use, Please choose another one.')
             return False
         return True
+
+
+class EditPostForm(Form):
+    post = StringField('edit_post', validators=[DataRequired(),
+                                                Length(min=0, max=140)])
+    post_id = IntegerField('post_id', validators=[DataRequired()])
+    submit = SubmitField("Save changes")
 
 
 class PostForm(Form):
