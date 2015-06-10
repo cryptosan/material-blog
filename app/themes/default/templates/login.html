@@ -1,7 +1,7 @@
 <!-- extend from base layout -->
 {% extends "base.html" %}
 
-{% block content %}
+{% block content -%}
 	<div class="container percent_25">
 		{% include 'message/danger.html' %}
 		<div class="panel panel-default">
@@ -64,4 +64,4 @@
 		<p>{{ form.remember_me }} Remember Me</p>
 		<p>{{ form.submit }}</p>
 	</form> -->
-{% endblock %}
+{%- endblock %}

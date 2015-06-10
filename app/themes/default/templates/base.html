@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	{% if title %}
+	{% if title -%}
 	<title>{{ title }} - Material Blog</title>
-	{% else %}
+	{%- else -%}
 	<title>Welcome to Material Blog</title>
-	{% endif %}
+	{%- endif %}
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/mdblog.css') }}">
 </head>
@@ -22,16 +22,15 @@
 				</button>
 				<a class="navbar-brand" href="#">Material-Blog</a>
 			</div>
-
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
 					<li><a href="{{ url_for('index') }}">Home <span class="sr-only">(current)</span></a></li>
-					{% if g.user.is_authenticated() %}
+					{% if g.user.is_authenticated() -%}
 					<li><a href="{{ url_for('timeline') }}">Timeline</a></li>
-					<li><a href="{{ url_for('user', nickname=g.user.nickname) }}">Profile</a></li>
-					{% endif %}
+					<li><a href="{{ url_for('blog.index') }}">Blog</a></li>
+					{%- endif %}
 				</ul>
-				{% if g.user.is_authenticated() %}
+				{% if g.user.is_authenticated() -%}
 				<form action="{{ url_for('search') }}" method="post" name="search" class="navbar-form navbar-left" role="search">
 					{{ g.search_form.hidden_tag() }}
 					<div class="form-group">
@@ -39,16 +38,17 @@
 					</div>
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</form>
-				{% endif %}
+				{%- endif %}
 				<ul class="nav navbar-nav navbar-right">
-					{% if g.user.is_authenticated() %}
+					{% if g.user.is_authenticated() -%}
+					<li><a href="{{ url_for('user', nickname=g.user.nickname) }}">Profile</a></li>
 					<li><a href="{{ url_for('logout') }}">Sign Out</a></li>
-					{% else %}
+					{%- else -%}
 					<li><a href="{{ url_for('login') }}">Sign In</a></li>
-						{% if g.register_form %}
+						{% if g.register_form -%}
 						<li><a href="{{ url_for('register') }}">Sign Up</a></li>
-						{% endif %}
-					{% endif %}
+						{%- endif %}
+					{%- endif %}
 				</ul>
 			</div>
 		</div>

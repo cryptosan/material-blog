@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block content -%}
 <div class="container">
     <div class="jumbotron">
         <h1>{{ conf.jumbotron.header }}</h1>
@@ -8,4 +8,4 @@
         <p><a href="{{ conf.jumbotron.link }}" class="btn btn-primary btn-lg">Learn more</a></p>
     </div>
 </div>
-{% endblock %}
+{%- endblock %}

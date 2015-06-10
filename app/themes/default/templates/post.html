@@ -3,12 +3,12 @@
         <div class="col-md-1"><div align="center"><img src="{{ post.author.avatar(25) }}" alt=""></div></div>
         <div class="col-md-7">{{ post.body }}</div>
         <div class="col-md-2 col-md-offset-2">
-            {% if post.user_id == g.user.id %}
+            {% if post.user_id == g.user.id -%}
             <div align="center">
                 <a href="#" class="label label-warning" data-toggle="modal" data-target="#editPostModal" onclick="modalEditPostForm({{post.id}}, '{{post.body}}')">Edit</a>
                 <a href="{{ url_for('delete', post_id=post.id) }}" class="label label-danger">Delete</a>
             </div>
-            {% endif %}
+            {%- endif %}
         </div>
     </div>
 </li>
