@@ -37,13 +37,14 @@
 					<div class="form-group">
 						{{ g.search_form.search(class="form-control", placeholder="Search", type="text", size=20) }}
 					</div>
-					<button type="submit" class="btn btn-default">Submit</button>
+					<button type="submit" class="btn btn-primary">Submit</button>
 				</form>
 				{% endif %}
 				<ul class="nav navbar-nav navbar-right">
 					{% if g.user.is_authenticated() %}
 					<li><a href="{{ url_for('logout') }}">Sign Out</a></li>
 					{% else %}
+					<li><a href="{{ url_for('login') }}">Sign In</a></li>
 						{% if g.register_form %}
 						<li><a href="{{ url_for('register') }}">Sign Up</a></li>
 						{% endif %}
@@ -53,7 +54,8 @@
 		</div>
 	</nav>
 	{% block content %}{% endblock %}
+	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script src="{{ url_for('static', filename='js/mdblog.js') }}"></script>
 </body>
-<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 </html>

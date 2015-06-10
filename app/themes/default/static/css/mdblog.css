@@ -1,8 +1,14 @@
-.custom_width {
+.percent_25 {
     width: 25%;
 }
-.custom_width_user {
+.percent_30 {
+    width: 30%;
+}
+.percent_40 {
     width: 40%;
+}
+.percent_50 {
+    width: 50%;
 }
 .custom_margin_top {
     margin-top: 10%;

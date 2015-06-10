@@ -1,21 +1,14 @@
-<!-- <table>
-	<tr valign="top">
-		<td><img src="{{ post.author.avatar(50) }}"></td>
-		<td>
-            <i>{{ post.author.nickname }} says:</i><br>{{ post.body }}<br>
+<li class="list-group-item">
+    <div class="row">
+        <div class="col-md-1"><div align="center"><img src="{{ post.author.avatar(25) }}" alt=""></div></div>
+        <div class="col-md-7">{{ post.body }}</div>
+        <div class="col-md-2 col-md-offset-2">
             {% if post.user_id == g.user.id %}
-            <a href="{{ url_for('delete', post_id=post.id) }}">Delete</a>
+            <div align="center">
+                <a href="#" class="label label-warning" data-toggle="modal" data-target="#editPostModal" onclick="modalEditPostForm({{post.id}}, '{{post.body}}')">Edit</a>
+                <a href="{{ url_for('delete', post_id=post.id) }}" class="label label-danger">Delete</a>
+            </div>
             {% endif %}
-        </td>
-	</tr>
-</table> -->
-
-
-<tr>
-    <td><img src="{{ post.author.avatar(30) }}"></td>
-    <td>{{ post.body }}</td>
-    <td>{{ post.author.nickname }}</td>
-    {% if post.user_id == g.user.id %}
-    <td><a href="{{ url_for('delete', post_id=post.id) }}">delete</a></td>
-    {% endif %}
-</tr>
+        </div>
+    </div>
+</li>

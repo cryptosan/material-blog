@@ -3,9 +3,9 @@
 {% block content %}
 <div class="container">
     <div class="jumbotron">
-        <h1>Material Blog</h1>
-        <p>This is a simple material blog</p>
-        <p><a href="#" class="btn btn-primary btn-lg">Learn more</a></p>
+        <h1>{{ conf.jumbotron.header }}</h1>
+        <p>{{ conf.jumbotron.desc }}</p>
+        <p><a href="{{ conf.jumbotron.link }}" class="btn btn-primary btn-lg">Learn more</a></p>
     </div>
 </div>
 {% endblock %}

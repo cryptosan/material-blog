@@ -1,0 +1,14 @@
+{% macro paginator(redirect, nick, pages) -%}
+<ul class="pager">
+    {% if posts.has_prev %}
+        <li class="previous"><a href="{{ url_for('user', nickname=g.user.nickname, page=posts.prev_num) }}">&larr; New</a></li>
+    {% else %}
+        <li class="previous disabled"><a href="#">&larr; New</a></li>
+    {% endif %}
+    {% if posts.has_next %}
+        <li class="next"><a href="{{ url_for('user', nickname=g.user.nickname, page=posts.next_num) }}">Old &rarr;</a></li>
+    {% else %}
+        <li class="next disabled"><a href="#">Old &rarr;</a></li>
+    {% endif %}
+</ul>
+{%- endmacro %}
