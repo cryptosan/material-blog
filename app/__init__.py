@@ -26,6 +26,11 @@ signup = RegisterManager(app)
 signup.save_redirect_view('index')
 
 
+# Blueprint
+from app.blog import blog
+app.register_blueprint(blog, url_prefix='/blog')
+
+
 if not app.debug:
     import logging
     from logging.handlers import RotatingFileHandler
