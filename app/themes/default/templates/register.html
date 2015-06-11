@@ -5,19 +5,31 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">Sign Up</div>
 			<div class="panel-body">
-				<form action="" method="post" class="form-horizontal">
+				<form action="" method="post" class="form-horizontal" name="registerForm">
 					{{ form.hidden_tag() }}
 					<fieldset>
-						<div class="form-group">
+						<div class="form-group" id="emailForm">
 							{{ form.email.label(class="col-lg-2 control-label") }}
 							<div class="col-lg-10">
 								{{ form.email(class="form-control", placeholder="Email", type="text") | safe }}
+								{% for error in form.errors.email -%}
+								<div class="text-danger">{{ error }}</div>
+								<script language="javascript">
+								document.getElementById("emailForm").className += " has-error";
+								</script>
+								{%- endfor %}
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group" id="nicknameForm">
 							{{ form.nickname.label(class="col-lg-2 control-label") }}
 							<div class="col-lg-10">
 								{{ form.nickname(class="form-control", placeholder="Nickname", type="text") | safe }}
+								{% for error in form.errors.nickname -%}
+								<div class="text-danger">{{ error }}</div>
+								<script language="javascript">
+								document.getElementById("nicknameForm").className += " has-error";
+								</script>
+								{%- endfor %}
 							</div>
 						</div>
 						<div class="form-group">
@@ -26,10 +38,16 @@
 								{{ form.password(class="form-control", placeholder="Password") }}
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group" id="confirmForm">
 							{{ form.confirm.label(class="col-lg-2 control-label") }}
 							<div class="col-lg-10">
 								{{ form.confirm(class="form-control", placeholder="Repeat password") }}
+								{% for error in form.errors.password -%}
+								<div class="text-danger">{{ error }}</div>
+								<script language="javascript">
+								document.getElementById("confirmForm").className += " has-error";
+								</script>
+								{%- endfor %}
 							</div>
 						</div>
 						<div class="form-group">
