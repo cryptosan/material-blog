@@ -11,16 +11,28 @@
 					{{ form.hidden_tag() }}
 					<fieldset>
 						<!-- <h1>Sign up</h1> -->
-						<div class="form-group">
+						<div class="form-group" id="emailForm">
 							{{ form.email.label(class="col-lg-2 control-label") }}
 							<div class="col-lg-10">
 								{{ form.email(class="form-control", placeholder="Email", type="text") | safe }}
+								{% for error in form.errors.email -%}
+								<div class="text-danger">{{ error }}</div>
+								<script language="javascript">
+								document.getElementById("emailForm").className += " has-error";
+								</script>
+								{%- endfor %}
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group" id="passwordForm">
 							{{ form.password.label(class="col-lg-2 control-label") }}
 							<div class="col-lg-10">
 								{{ form.password(class="form-control", placeholder="Password") }}
+								{% for error in form.errors.password -%}
+								<div class="text-danger">{{ error }}</div>
+								<script language="javascript">
+								document.getElementById("passwordForm").className += " has-error";
+								</script>
+								{%- endfor %}
 								<div class="checkbox">
 									<label>
 										{{ form.remember_me }} Remember Me
