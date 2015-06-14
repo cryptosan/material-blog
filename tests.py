@@ -6,7 +6,7 @@ import os
 from app import app, db
 from app.models import User
 from datetime import datetime, timedelta
-from app.models import User, Post
+from app.models import User, Post, Option
 from config import basedir
 
 
@@ -27,6 +27,7 @@ class TestCase(unittest.TestCase):
 
     def test_avatar(self):
         u = User(nickname='john', email='john@example.com')
+        u.make_a_hash('john')
         avatar = u.avatar(128)
         expected = 'http://www.gravatar.com/avatar/' \
             'd4c74594d841139328695756648b6bd6'
@@ -40,6 +41,8 @@ class TestCase(unittest.TestCase):
     def test_follow(self):
         u1 = User(nickname='foll1', email='foll1@example.com')
         u2 = User(nickname='foll2', email='foll2@example.com')
+        u1.make_a_hash('foll1')
+        u2.make_a_hash('foll2')
         db.session.add(u1)
         db.session.add(u2)
         db.session.commit()
@@ -67,6 +70,10 @@ class TestCase(unittest.TestCase):
         u2 = User(nickname='susan', email='susan@example.com')
         u3 = User(nickname='mary', email='mary@example.com')
         u4 = User(nickname='david', email='david@example.com')
+        u1.make_a_hash('john')
+        u2.make_a_hash('susan')
+        u3.make_a_hash('mary')
+        u4.make_a_hash('david')
         db.session.add(u1)
         db.session.add(u2)
         db.session.add(u3)
@@ -133,6 +140,32 @@ class TestCase(unittest.TestCase):
         assert len(datas) == 1
         datas = Post.query.whoosh_search('second OR third').all()
         assert len(datas) == 2
+
+    def test_register_with_blog_option(self):
+        u1 = User(nickname='john', email='john@example.com')
+        u2 = User(nickname='susan', email='susan@example.com')
+        u1.make_a_hash('john')
+        u2.make_a_hash('susan')
+        db.session.add(u1)
+        db.session.add(u2)
+        opt1 = Option(user=u1)
+        opt2 = Option(user=u2)
+        db.session.add(opt1)
+        db.session.add(opt2)
+        db.session.commit()
+        # Test in setting side.
+        assert opt1.is_blog_publishing() is True
+        assert opt2.is_blog_publishing() is True
+        opt1.publish_blog(False)
+        opt2.publish_blog(False)
+        assert opt1.is_blog_publishing() is False
+        assert opt2.is_blog_publishing() is False
+        # Test in user side.
+        u1.opts.publish_blog(True)
+        assert u1.opts.is_blog_publishing() is True
+        assert u2.opts.is_blog_publishing() is False
+        u2.opts.publish_blog(True)
+        assert u2.opts.is_blog_publishing() is True
 
 
 if __name__ == '__main__':
