@@ -34,6 +34,7 @@ class User(db.Model):
         backref=db.backref('followers', lazy='dynamic'),
         lazy='dynamic'
     )
+    opts = db.relationship("Option", uselist=False, backref="user")
 
     def is_authenticated(self):
         return True
@@ -95,6 +96,23 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {0}>'.format(self.body)
+
+
+class Option(db.Model):
+    __tablename__ = 'options'
+
+    id = db.Column(db.Integer, primary_key=True)
+    blog_state = db.Column(db.Boolean, default=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return '<Option {0}>'.format(self.blog_state)
+
+    def is_blog_publishing(self):
+        return self.blog_state
+
+    def publish_blog(self, state):
+        self.blog_state = state
 
 
 # Run whooshalchemy.
