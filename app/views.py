@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from app import app, db, lm, signup
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS
-from .models import User, Post
+from .models import User, Post, Option 
 from .forms import LoginForm, RegisterForm, EditForm, PostForm, SearchForm, \
     EditPostForm
 from flask import render_template, redirect, flash, redirect, session, \
@@ -231,6 +231,8 @@ def register():
         user = User(email=form.email.data, nickname=form.nickname.data)
         user.make_a_hash(form.password.data)
         db.session.add(user)
+        opt = Option(user=user)
+        db.session.add(opt)
         db.session.commit()
         flash('You are registered!')
         return redirect(url_for('login'))
