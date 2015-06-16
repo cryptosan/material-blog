@@ -1,27 +1,59 @@
 {% extends "base.html" %}
 
 {% block content -%}
-	<h1>Edit your profile</h1>
-	<form action="" method="post" name="edit">
-		{{ form.hidden_tag() }}
-		<table>
-			<tr>
-				<td>Your nickname:</td>
-				<td>
-					{{ form.nickname(size=24) }}
-					{% for error in form.errors.nickname -%}
-					<br><span style="color: red;">{{ error }}</span>
-					{%- endfor %}
-				</td>
-			</tr>
-			<tr>
-				<td>About yourself:</td>
-				<td>{{ form.about_me(cols=32, rows=4) }}</td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><input type="submit" value="Save"></td>
-			</tr>
-		</table>
+<div class="container percent_30">
+	<form class="form-horizontal">
+		<fieldset>
+			<legend>{{ g.user.nickname }}'s Profile</legend>
+			<div class="form-group">
+				{{ form.nickname.label(class="col-lg-2 control-label") }}
+				<div class="col-lg-10">
+					{{ form.nickname(size=24, class="form-control") }}
+				</div>
+			</div>
+			<div class="form-group">
+				{{ form.about_me.label(class="col-lg-2 control-label") }}
+				<div class="col-lg-10">
+					{{ form.about_me(cols=32, rows=4, class="form-control") }}
+				</div>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>Advanced Options</legend>
+			<div class="form-group">
+				{{ form.publish_blog.label(class="col-lg-3 control-label") }}
+				<div class="col-lg-9">
+					<div class="checkbox">
+						<label>{{ form.publish_blog }}&nbsp;&nbsp;&nbsp;<em>Your blog will be shown, if you check it.</em></label>
+					</div>
+				</div>
+			</div>
+		</fieldset>
 	</form>
+	<!-- <div class="well well-lg">
+		<legend>{{ g.user.nickname }}'s Profile</legend>
+		<form action="" method="post" name="edit">
+			{{ form.hidden_tag() }}
+			<table>
+				<tr>
+					<td>Your nickname:</td>
+					<td>
+						{{ form.nickname(size=24) }}
+						{% for error in form.errors.nickname -%}
+						<br><span style="color: red;">{{ error }}</span>
+						{%- endfor %}
+					</td>
+				</tr>
+				<tr>
+					<td>About yourself:</td>
+					<td>{{ form.about_me(cols=32, rows=4) }}</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="submit" value="Save"></td>
+				</tr>
+			</table>
+		</form>
+	</div> -->
+</div>
 {%- endblock %}
