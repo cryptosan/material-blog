@@ -75,9 +75,10 @@ class EditForm(Form):
         ),
         Length(min=4, max=12)
     ])
-    about_me = TextAreaField('about_me', validators=[
+    about_me = TextAreaField('About Me', validators=[
         Length(min=0, max=140)
     ])
+    publish_blog = BooleanField('Publish Your Blog')
 
     def __init__(self, original_nickname, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
