@@ -3,11 +3,10 @@ from __future__ import unicode_literals
 
 from app import app, db, lm, signup
 from config import POST_PER_PAGE, MAX_SEARCH_RESULTS
-from .models import User, Post, Option 
+from .models import User, Post, Option
 from .forms import LoginForm, RegisterForm, EditForm, PostForm, SearchForm, \
     EditPostForm
-from flask import render_template, redirect, flash, redirect, session, \
-    url_for, request, g
+from flask import render_template, flash, redirect, url_for, g
 from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 from flask.ext.register import register_required
