@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from app import app, db, lm, signup
-from config import POST_PER_PAGE, MAX_SEARCH_RESULTS
+from config import POST_PER_PAGE
 from .models import User, Post, Option
 from .forms import LoginForm, RegisterForm, EditForm, PostForm, SearchForm, \
     EditPostForm
