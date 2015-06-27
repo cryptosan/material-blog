@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import unittest
 import os
 from app import app, db
-from app.models import User
 from datetime import datetime, timedelta
 from app.models import User, Post, Option
 from config import basedir
