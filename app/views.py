@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
 from app import app, db, lm, signup
 from config import POST_PER_PAGE
@@ -121,11 +120,11 @@ def delete(post_id):
     post = Post.query.filter_by(id=post_id).first()
     if post is None:
         flash('Post not found!')
-        return redirect(url_for('timeline', nickname=g.user.nickname,
+        return redirect(url_for('user', nickname=g.user.nickname,
                                 alert='danger'))
     if g.user.id is not post.user_id:
         flash('You\'re not a owner.!')
-        return redirect(url_for('timeline', nickname=g.user.nickname,
+        return redirect(url_for('user', nickname=g.user.nickname,
                                 alert='danger'))
     db.session.delete(post)
     db.session.commit()

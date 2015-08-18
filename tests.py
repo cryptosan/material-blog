@@ -5,13 +5,30 @@ import unittest
 import os
 from app import app, db
 from datetime import datetime, timedelta
-from app.models import User, Post, Option
+from app.models import User, Post, Option, BlogPost
 from config import basedir
 
 
 class TestCase(unittest.TestCase):
+    """
+    A list of Unit test.
+    * Done
+     - Avatar
+     - Password hash
+     - Follow
+     - Follows' timeline posts
+     - Follows' blog posts
+     - Full text search
+     - Blog publish option
+    * Not yet
+    
+    """
 
     def setUp(self):
+        """
+        Set up all of config which need to unit test.
+        - DB in memory.
+        """
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         # unittest in memory
@@ -21,6 +38,9 @@ class TestCase(unittest.TestCase):
         db.create_all()
 
     def tearDown(self):
+        """
+        Remove all of db from memory.
+        """
         db.session.remove()
         db.drop_all()
 
@@ -33,11 +53,17 @@ class TestCase(unittest.TestCase):
         assert avatar[0:len(expected)] == expected
 
     def test_password_hash(self):
+        """
+        Unit test for password hash with bcrypt.
+        """
         u = User(nickname='pass', email='pass@pass.com')
         u.make_a_hash('passwordofpass')
         assert u.check_password('passwordofpass')
 
     def test_follow(self):
+        """
+        Unit test for following who i want to follow.
+        """
         u1 = User(nickname='foll1', email='foll1@example.com')
         u2 = User(nickname='foll2', email='foll2@example.com')
         u1.make_a_hash('foll1')
@@ -64,6 +90,9 @@ class TestCase(unittest.TestCase):
         assert u2.followers.count() == 0
 
     def test_follow_posts(self):
+        """
+        Unit test to get a list of followed people' timeline post.
+        """
         # make four users
         u1 = User(nickname='john', email='john@example.com')
         u2 = User(nickname='susan', email='susan@example.com')
@@ -119,6 +148,32 @@ class TestCase(unittest.TestCase):
         assert f2 == [p3, p2]
         assert f3 == [p4, p3]
         assert f4 == [p4]
+        
+    def test_followed_blog_posts(self):
+        """
+        Unit test to get a list of followed people' blog post.
+        """
+        utcnow = datetime.utcnow()
+        u1 = User(nickname='foll1', email='foll1@example.com')
+        u2 = User(nickname='foll2', email='foll2@example.com')
+        u1.make_a_hash('foll1')
+        u2.make_a_hash('foll2')
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+        bp1 = BlogPost(body='i\'m user 1', 
+                       timestamp=utcnow + timedelta(seconds=1),
+                       blog_author=u1)
+        bp2 = BlogPost(body='i\'m user 2',
+                       timestamp=utcnow + timedelta(seconds=2),
+                       blog_author=u2)
+        u1.follow(u2)
+        db.session.add(bp1)
+        db.session.add(bp2)
+        db.session.commit()
+        f1 = u1.followed_blog_posts().all()
+        assert len(f1) == 1
+        assert f1 == [bp2]
 
     def test_full_text_search(self):
         u = User.query.get(1)
@@ -141,6 +196,9 @@ class TestCase(unittest.TestCase):
         assert len(datas) == 2
 
     def test_register_with_blog_option(self):
+        """
+        Unit test for blog publishing.
+        """
         u1 = User(nickname='john', email='john@example.com')
         u2 = User(nickname='susan', email='susan@example.com')
         u1.make_a_hash('john')
@@ -155,15 +213,15 @@ class TestCase(unittest.TestCase):
         # Test in setting side.
         assert opt1.is_blog_publishing() is True
         assert opt2.is_blog_publishing() is True
-        opt1.publish_blog(False)
-        opt2.publish_blog(False)
+        opt1.set_blog_status(False)
+        opt2.set_blog_status(False)
         assert opt1.is_blog_publishing() is False
         assert opt2.is_blog_publishing() is False
         # Test in user side.
-        u1.opts.publish_blog(True)
+        u1.opts.set_blog_status(True)
         assert u1.opts.is_blog_publishing() is True
         assert u2.opts.is_blog_publishing() is False
-        u2.opts.publish_blog(True)
+        u2.opts.set_blog_status(True)
         assert u2.opts.is_blog_publishing() is True
 
 

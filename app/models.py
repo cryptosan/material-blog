@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
 from app import app, db, bcrypt
 from hashlib import md5
-
-# Doesn't work on Python 3.
-import flask.ext.whooshalchemy as whooshalchemy
 
 
 followers = db.Table(
@@ -23,6 +19,8 @@ class User(db.Model):
     pw_hash = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), index=True, unique=True, nullable=False)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    blog_posts = db.relationship('BlogPost', backref='blog_author',
+                                 lazy='dynamic')
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime)
     user_active = db.Column(db.Boolean, default=True, nullable=True)
@@ -68,6 +66,16 @@ class User(db.Model):
             followers.c.followed_id == Post.user_id)). \
             filter(followers.c.follower_id == self.id). \
             order_by(Post.timestamp.desc())
+            
+    def followed_blog_posts(self):
+        return BlogPost.query.join(followers, (
+            followers.c.followed_id == BlogPost.user_id)). \
+            filter(followers.c.follower_id == self.id). \
+            order_by(BlogPost.timestamp.desc())
+            
+    def my_blog_posts(self):
+        return BlogPost.query.filter_by(user_id=self.id). \
+            order_by(BlogPost.timestamp.desc())
 
     def get_id(self):
         try:
@@ -85,19 +93,6 @@ class User(db.Model):
         return '<User {0}>'.format(self.nickname)
 
 
-class Post(db.Model):
-    __tablename__ = 'posts'
-    __searchable__ = ['body']
-
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(140))
-    timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-
-    def __repr__(self):
-        return '<Post {0}>'.format(self.body)
-
-
 class Option(db.Model):
     __tablename__ = 'options'
 
@@ -111,9 +106,32 @@ class Option(db.Model):
     def is_blog_publishing(self):
         return self.blog_state
 
-    def publish_blog(self, state):
+    def set_blog_status(self, state):
         self.blog_state = state
 
 
-# Run whooshalchemy.
-whooshalchemy.whoosh_index(app, Post)
+class Post(db.Model):
+    __tablename__ = 'posts'
+    __searchable__ = ['body']
+
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return '<Post {0}>'.format(self.body)
+
+
+class BlogPost(db.Model):
+    __tablename__ = 'blog_posts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    subject = db.Column(db.String(50), nullable=False)
+    body = db.Column(db.String(300), nullable=False)
+    timestamp = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return '<Blog Post {0}>'.format(self.body)
+

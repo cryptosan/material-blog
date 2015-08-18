@@ -9,6 +9,9 @@
 	{%- endif %}
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/mdblog.css') }}">
+	<link rel="stylesheet" href="//cdn.jsdelivr.net/editor/0.1.0/editor.css">
+	<script src="//cdn.jsdelivr.net/editor/0.1.0/editor.js"></script>
+    <script src="//cdn.jsdelivr.net/editor/0.1.0/marked.js"></script>
 </head>
 <body>
 	<nav class="navbar navbar-default">
@@ -27,7 +30,7 @@
 					<li><a href="{{ url_for('index') }}">Home <span class="sr-only">(current)</span></a></li>
 					{% if g.user.is_authenticated() -%}
 					<li><a href="{{ url_for('timeline') }}">Timeline</a></li>
-					<li><a href="{{ url_for('blog.index') }}">Blog</a></li>
+					<li><a href="{{ url_for('blog.index', page=1) }}">Blog</a></li>
 					{%- endif %}
 				</ul>
 				{% if g.user.is_authenticated() -%}
@@ -45,6 +48,7 @@
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ g.user.nickname }} <span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
 							<li><a href="{{ url_for('user', nickname=g.user.nickname) }}">Profile</a></li>
+							<li><a href="{{ url_for('blog.post') }}">Post</a></li>
 						</ul>
 					</li>
 					<li><a href="{{ url_for('logout') }}">Sign Out</a></li>

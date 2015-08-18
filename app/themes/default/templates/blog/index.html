@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container percent_40">
     <h1>{{ g.user.nickname }}'s blog!</h1>
+    <ul class="list-group">
+        {% for post in posts.items -%}
+            <li class="list-group-item">
+                {{ post.subject }} 
+                <a href="{{ url_for('blog.edit', numOfPost=post.id) }}">Edit</a> / 
+                <a href="{{ url_for('blog.delete', numOfPost=post.id) }}">Delete</a>
+            </li>
+        {%- endfor %}
+    </ul>
+</div>
 {% endblock %}

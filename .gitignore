@@ -2,5 +2,10 @@
 *.sublime-workspace
 *.pyc
 *.db
+*.project
+.settings/*
+.tags
+.tags_sorted_by_file
+.pydevproject
 migrations/
 tmp/

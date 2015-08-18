@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-SQLALCHEMY_DATABASE_URI = "postgresql://cryptos:cryptos@localhost/testdb"
+SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://jeff:cryptos@localhost/mdblog"
 
 # Setting funcs.
 REGISTER_ENABLED = True
