@@ -34,7 +34,7 @@ def index(page=1):
 def post():
     form = BlogPostForm()
     if form.validate_on_submit():
-        post = BlogPost(body=repr(form.blgPostBody.data).strip("'"),
+        post = BlogPost(body=form.blgPostBody.data,
                         subject=form.blgPostSub.data,
                         timestamp=datetime.utcnow(),
                         blog_author=g.user)
