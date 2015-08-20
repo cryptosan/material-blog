@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from app import db
-from config import POST_PER_PAGE
+from config import BLOG_POST_PER_PAGE
 from flask import Blueprint, g, render_template, flash, redirect, url_for
 from flask.ext.login import login_required, current_user
 from .blog_forms import BlogPostForm, BlogEditForm
@@ -23,7 +23,7 @@ def index(page=1):
     """
     # Print posts all i am following.
 #     posts = g.user.followed_blog_posts().paginate(page, POST_PER_PAGE, False)
-    posts = g.user.my_blog_posts().paginate(page, POST_PER_PAGE, False)
+    posts = g.user.my_blog_posts().paginate(page, BLOG_POST_PER_PAGE, False)
 #     posts = g.user.my_blog_posts().all()
     return render_template('blog/index.html',
                            posts=posts)
@@ -34,7 +34,7 @@ def index(page=1):
 def post():
     form = BlogPostForm()
     if form.validate_on_submit():
-        post = BlogPost(body=form.blgPostBody.data,
+        post = BlogPost(body=repr(form.blgPostBody.data).strip("'"),
                         subject=form.blgPostSub.data,
                         timestamp=datetime.utcnow(),
                         blog_author=g.user)
@@ -69,6 +69,7 @@ def edit(numOfPost):
     else:
         form.blgEditSub.data = blogPost.subject
         form.blgEditBody.data = blogPost.body
+        print(repr(blogPost.body))
     return render_template('blog/edit.html',
                            title='Edit Post',
                            form=form)

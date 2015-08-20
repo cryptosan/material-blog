@@ -25,10 +25,17 @@
         </fieldset>
     </form>
 </div>
-<script language="javascript">
+<!-- <script language="javascript">
     var editor = new Editor({
         element: document.getElementById('body')
     });
     editor.render();
+</script> -->
+<script language="javascript">
+    var simplemde = new SimpleMDE({
+        element: document.getElementById("body"),
+        lineWrapping: false
+    });
+    simplemde.render();
 </script>
 {% endblock %}

@@ -8,6 +8,7 @@ SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://jeff:cryptos@localhost/mdblog"
 # Setting funcs.
 REGISTER_ENABLED = True
 POST_PER_PAGE = 5
+BLOG_POST_PER_PAGE = 10
 WTF_CSRF_ENABLED = True
 SECRET_KEY = 'youdontknowthis$'
 # Full text search engine path.

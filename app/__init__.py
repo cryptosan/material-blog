@@ -6,6 +6,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.register import RegisterManager
+from flask.ext.markdown import Markdown
 
 
 app = Flask(__name__)
@@ -24,6 +25,8 @@ lm.login_view = 'login'
 
 signup = RegisterManager(app)
 signup.save_redirect_view('index')
+
+md = Markdown(app)
 
 
 # Blueprint
